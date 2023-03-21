@@ -11,10 +11,11 @@ impl Map {
     }
 
     fn at(self, key: Field) -> Set {
-        let derived_storage_slot = pedersen(
-            Domains.MappingStorageSlot,
-            [self.base_storage_slot, key]
-        );
+        let derived_storage_slot = pedersen([
+            Domains.MappingStorageSlot, 
+            self.base_storage_slot, 
+            key
+        ]);
 
         Set::new(derived_storage_slot)
     }

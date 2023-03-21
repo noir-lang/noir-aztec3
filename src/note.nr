@@ -12,8 +12,11 @@ struct Note {
 
 impl Note {
     fn new(value: Field, owner: Point) -> Note {
-        let randomness = ORACLE::rand(); // ORACLE CALL
-        let nonce = ORACLE::rand(); // ORACLE CALL (nonce not secure: would need to be better in production).
+        // let randomness = ORACLE::rand(); // ORACLE CALL
+        // let nonce = ORACLE::rand(); // ORACLE CALL (nonce not secure: would need to be better in production).
+
+        let randomness = 4; // Chosen by fair dice roll
+        let nonce = 3;      // Guaranteed to be random
 
         Note {
             value,
@@ -37,7 +40,9 @@ impl Note {
     }
 
     fn compute_nullifier(self, note_hash: Field) -> Field {
-        let secret_key = ORACLE::get_secret_key(self.owner); // ORACLE CALL - retrieves the secret key for a given public key.
+        // let secret_key = ORACLE::get_secret_key(self.owner); // ORACLE CALL - retrieves the secret key for a given public key.
+        let secret_key = 12; // Temporary
+
         let check_public_key = scalar_mul(secret_key, KEY_GENERATOR); // (function not show in this doc: just assumed to exist in noir's stdlib)
 
         constrain check_public_key == self.owner;

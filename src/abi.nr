@@ -14,8 +14,8 @@ struct PublicInputs {
     return_values : [Field; MAX_RETURN_VALUES],
     logs : [Field; MAX_LOGS],
 
-    new_commitments : [Field; MAX_NEW_COMMITMENTS],
-    new_nullifiers : [Field; MAX_NEW_NULLIFIERS],
+    new_commitments: BoundedVec<Field, MAX_NEW_COMMITMENTS>,
+    new_nullifiers: BoundedVec<Field, MAX_NEW_NULLIFIERS>,
 
     private_call_stack : [Field; MAX_PRIVATE_CALL_STACK],
     public_call_stack : [Field; MAX_PUBLIC_CALL_STACK],
@@ -60,8 +60,8 @@ impl PublicInputs {
             return_values: [0; MAX_RETURN_VALUES],
             logs: [0; MAX_LOGS],
 
-            new_commitments: [0; MAX_NEW_COMMITMENTS],
-            new_nullifiers: [0; MAX_NEW_NULLIFIERS],
+            new_commitments: BoundedVec::new(0),
+            new_nullifiers: BoundedVec::new(0),
 
             private_call_stack: [0; MAX_PRIVATE_CALL_STACK],
             public_call_stack: [0; MAX_PUBLIC_CALL_STACK],
