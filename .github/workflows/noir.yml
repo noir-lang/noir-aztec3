@@ -1,0 +1,21 @@
+name: Noir
+
+on:
+  push:
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install noir toolchain
+        uses: noir-lang/noirup@v0.1.1
+        with:
+          toolchain: nightly
+
+      - name: Run nargo check
+        run: nargo check
