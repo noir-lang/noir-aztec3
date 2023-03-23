@@ -1,9 +1,14 @@
 mod abi;
+mod context;
+mod map;
+mod note;
+mod set;
+mod vec; //This can/should be moved out into another library
 
-global Nonce: comptime Field = 1;
-global NoteHash: comptime Field = 2;
-global NoteStorageSlot: comptime Field = 3;
-global MappingStorageSlot: comptime Field = 4;
-global Nullifier: comptime Field = 5;
+global Nonce = 1;
+global NoteHash = 2;
+global NoteStorageSlot = 3;
+global MappingStorageSlot = 4;
+global Nullifier = 5;
 
 global TREE_HEIGHT: comptime Field = 5;

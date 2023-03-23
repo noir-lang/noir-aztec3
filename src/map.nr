@@ -1,8 +1,7 @@
-use crate::aztec3;
-use crate::aztec3::set::Set;
+use crate::set::Set;
 
 struct Map {
-    base_storage_slot: Field;
+    base_storage_slot: Field,
 }
 
 impl Map {
@@ -11,11 +10,11 @@ impl Map {
     }
 
     fn at(self, key: Field) -> Set {
-        let derived_storage_slot = pedersen([
-            Domains.MappingStorageSlot, 
+        let derived_storage_slot = dep::std::hash::pedersen([
+            crate::MappingStorageSlot, 
             self.base_storage_slot, 
             key
-        ]);
+        ])[0];
 
         Set::new(derived_storage_slot)
     }

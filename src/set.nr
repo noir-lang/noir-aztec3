@@ -1,13 +1,12 @@
-use crate::*;
 use crate::context::Context;
-// use public_inputs::{PUBLIC_INPUTS};
-use note::Note;
+use crate::note::Note;
+use crate::note::Point;
 
 // Data returned when getting a note
 struct NoteGetterData {
     note: Note,
     leaf_index: Field,
-    sibling_path: [Field; TREE_HEIGHT],
+    sibling_path: [Field; crate::TREE_HEIGHT],
     root: Field,
 }
 
@@ -25,12 +24,12 @@ impl Set {
         let storage_slot = self.storage_slot;
 
         let note_hash = note.compute_note_hash();
-        let siloed_note_hash = pedersen([
+        let siloed_note_hash = dep::std::hash::pedersen([
             crate::NoteStorageSlot,
             note_hash, 
             storage_slot, 
             contract_address,
-        ]);
+        ])[0];
 
         ctx = ctx.push_new_note_hash(siloed_note_hash);
         ctx = ctx.push_new_note(note);
@@ -43,26 +42,32 @@ impl Set {
         let contract_address: Field = ctx.public_inputs.call_context.storage_contract_address;
         let storage_slot = self.storage_slot;
 
-        let note_getter_data: [NoteGetterData; 2] = ORACLE::get_2_notes(contract_address, storage_slot);
+        // let note_getter_data: [NoteGetterData; 2] = ORACLE::get_2_notes(contract_address, storage_slot);
+        let note_getter_data = [
+            NoteGetterData { note: Note::dummy(), leaf_index: 0, sibling_path: [1, 2, 3, 4, 5], root: 1 },
+            NoteGetterData { note: Note::dummy(), leaf_index: 1, sibling_path: [1, 2, 3, 4, 5], root: 1 },
+        ];
 
-        for i in 0..2 {
-            let NoteGetterData { note, leaf_index, sibling_path, root } = note_getter_data[i];
+        for data in note_getter_data {
+            let NoteGetterData { note, leaf_index, sibling_path, root } = data;
+            let _ignored = sibling_path;
 
             let note_hash = note.compute_note_hash();
-            let siloed_note_hash = pedersen([
+            let siloed_note_hash = dep::std::hash::pedersen([
                 crate::NoteStorageSlot,
                 note_hash, 
                 storage_slot, 
                 contract_address
-            ]);
+            ])[0];
 
             // Check existence in tree:
             // (Not sure what methods noir has, we can probably use whatever those are)
-            let check_root = compute_merkle_root(
-                siloed_note_hash,
-                leaf_index,
-                sibling_path,
-            );
+            // let check_root = compute_merkle_root(
+            //     siloed_note_hash,
+            //     leaf_index,
+            //     sibling_path,
+            // );
+            let check_root = siloed_note_hash + leaf_index;
 
             constrain root == check_root;
 
@@ -74,21 +79,21 @@ impl Set {
             }
         }
 
-        note_getter_data.map(|data| data.note)
+        note_getter_data.map(|data: NoteGetterData| data.note)
     }
 
 
     fn remove(self, mut ctx: Context, note: Note) -> Context {
         let contract_address: Field = ctx.public_inputs.call_context.storage_contract_address;
-        let storage_slot = set.storage_slot;
+        let storage_slot = self.storage_slot;
 
         let note_hash = note.compute_note_hash();
-        let siloed_note_hash = pedersen([
+        let siloed_note_hash = dep::std::hash::pedersen([
             crate::NoteStorageSlot,
             note_hash,
             storage_slot,
             contract_address,
-        ]);
+        ])[0];
 
         let nullifier = note.compute_nullifier(siloed_note_hash);
 

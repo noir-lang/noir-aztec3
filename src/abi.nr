@@ -7,6 +7,8 @@ global MAX_PRIVATE_CALL_STACK : comptime Field = 5;
 global MAX_PUBLIC_CALL_STACK: comptime Field = 5;
 global MAX_L1_MSG_STACK : comptime Field = 5;
 
+use crate::vec::BoundedVec;
+
 struct PublicInputs {
     call_context : CallContext,
 
@@ -14,8 +16,8 @@ struct PublicInputs {
     return_values : [Field; MAX_RETURN_VALUES],
     logs : [Field; MAX_LOGS],
 
-    new_commitments: BoundedVec<Field, MAX_NEW_COMMITMENTS>,
-    new_nullifiers: BoundedVec<Field, MAX_NEW_NULLIFIERS>,
+    new_commitments: BoundedVec<Field, 5>, // = MAX_NEW_COMMITMENTS
+    new_nullifiers: BoundedVec<Field, 5>, // = MAX_NEW_NULLIFIERS
 
     private_call_stack : [Field; MAX_PRIVATE_CALL_STACK],
     public_call_stack : [Field; MAX_PUBLIC_CALL_STACK],
@@ -47,6 +49,27 @@ struct ContractDeploymentData {
 }
 
 impl PublicInputs {
+    fn empty() -> Self {
+        PublicInputs::new(
+            CallContext {
+                msg_sender: 0,
+                storage_contract_address: 0,
+                portal_contract_address: 0,
+                is_delegate_call: false,
+                is_static_call: false,
+                is_contract_deployment: false,
+            },
+            ContractDeploymentData {
+                constructor_vk_hash: 0,
+                function_tree_root: 0,
+                contract_address_salt: 0,
+                portal_contract_address: 0,
+                hide_private_function_data: false,
+            },
+            [0, 0, 0, 0, 0],
+        )
+    }
+
     fn new(
         call_context: CallContext,
         contract_deployment_data: ContractDeploymentData,
