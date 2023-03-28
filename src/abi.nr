@@ -1,6 +1,6 @@
-global MAX_ARGS: comptime Field = 1;
+global MAX_ARGS: comptime Field = 3;
 global MAX_RETURN_VALUES: comptime Field = 2;
-global MAX_LOGS: comptime Field = 3;
+global MAX_LOGS: comptime Field = 1;
 global MAX_NEW_COMMITMENTS: comptime Field = 4;
 global MAX_NEW_NULLIFIERS: comptime Field = 5;
 global MAX_PRIVATE_CALL_STACK : comptime Field = 6;
@@ -66,7 +66,7 @@ impl PublicInputs {
                 portal_contract_address: 0,
                 hide_private_function_data: false,
             },
-            [0],
+            [0,0,0],
         )
     }
 
