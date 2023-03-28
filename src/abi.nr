@@ -66,7 +66,7 @@ impl PublicInputs {
                 portal_contract_address: 0,
                 hide_private_function_data: false,
             },
-            [0, 0, 0, 0, 0],
+            [0],
         )
     }
 
