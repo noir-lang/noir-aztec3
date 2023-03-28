@@ -1,11 +1,11 @@
-global MAX_ARGS: comptime Field = 5;
-global MAX_RETURN_VALUES: comptime Field = 5;
-global MAX_LOGS: comptime Field = 5;
-global MAX_NEW_COMMITMENTS: comptime Field = 5;
+global MAX_ARGS: comptime Field = 1;
+global MAX_RETURN_VALUES: comptime Field = 2;
+global MAX_LOGS: comptime Field = 3;
+global MAX_NEW_COMMITMENTS: comptime Field = 4;
 global MAX_NEW_NULLIFIERS: comptime Field = 5;
-global MAX_PRIVATE_CALL_STACK : comptime Field = 5;
-global MAX_PUBLIC_CALL_STACK: comptime Field = 5;
-global MAX_L1_MSG_STACK : comptime Field = 5;
+global MAX_PRIVATE_CALL_STACK : comptime Field = 6;
+global MAX_PUBLIC_CALL_STACK: comptime Field = 7;
+global MAX_L1_MSG_STACK : comptime Field = 8;
 
 use crate::vec::BoundedVec;
 
