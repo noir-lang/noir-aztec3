@@ -1,18 +1,18 @@
 use crate::set::Set;
 
 struct Map {
-    base_storage_slot: Field,
+    storage_slot: Field,
 }
 
 impl Map {
-    fn new(base_storage_slot: Field) -> Map {
-        Map { base_storage_slot }
+    fn new(storage_slot: Field) -> Map {
+        Map { storage_slot }
     }
 
     fn at(self, key: Field) -> Set {
         let derived_storage_slot = dep::std::hash::pedersen([
             crate::MappingStorageSlot, 
-            self.base_storage_slot, 
+            self.storage_slot, 
             key
         ])[0];
 

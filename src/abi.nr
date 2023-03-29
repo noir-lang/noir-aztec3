@@ -12,16 +12,16 @@ use crate::vec::BoundedVec;
 struct PublicInputs {
     call_context : CallContext,
 
-    args : [Field; MAX_ARGS],
-    return_values : [Field; MAX_RETURN_VALUES],
-    logs : [Field; MAX_LOGS],
+    args : BoundedVec<Field, MAX_ARGS>,
+    return_values : BoundedVec<Field, MAX_RETURN_VALUES>,
+    logs : BoundedVec<Field, MAX_LOGS>,
 
     new_commitments: BoundedVec<Field, 5>,//MAX_NEW_COMMITMENTS>,
     new_nullifiers: BoundedVec<Field, 5>,//MAX_NEW_NULLIFIERS>,
 
-    private_call_stack : [Field; MAX_PRIVATE_CALL_STACK],
-    public_call_stack : [Field; MAX_PUBLIC_CALL_STACK],
-    l1_message_stack : [Field; MAX_L1_MSG_STACK],
+    private_call_stack : BoundedVec<Field, MAX_PRIVATE_CALL_STACK>,
+    public_call_stack : BoundedVec<Field, MAX_PUBLIC_CALL_STACK>,
+    l1_message_stack : BoundedVec<Field, MAX_L1_MSG_STACK>,
 
     old_private_data_tree_root : Field,
     old_nullifier_tree_root : Field,

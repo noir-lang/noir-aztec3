@@ -38,7 +38,7 @@ impl Set {
     
     
     // The `2` in the name is the number of notes returned
-    fn get_2(self, mut ctx: Context) -> [Note; 2] {
+    fn get_2(self, mut ctx: Context) -> (Context, [Note; 2]) {
         let contract_address: Field = ctx.public_inputs.call_context.storage_contract_address;
         let storage_slot = self.storage_slot;
 
@@ -79,7 +79,8 @@ impl Set {
             }
         }
 
-        note_getter_data.map(|data: NoteGetterData| data.note)
+        let notes = note_getter_data.map(|data: NoteGetterData| data.note);
+        (ctx, notes)
     }
 
 
@@ -98,7 +99,6 @@ impl Set {
         let nullifier = note.compute_nullifier(siloed_note_hash);
 
         ctx = ctx.push_new_nullifier(nullifier);
-        ctx = ctx.push_nullified_note(note);
-        ctx
+        ctx.push_nullified_note(note)
     }
 }
