@@ -63,7 +63,7 @@ impl Context {
         self
     }
 
-    fn push_nullified_note(mut self: Self, _note: Note) -> Self {
+    fn push_nullified_note(mut self: Self, note: Note) -> Self {
         self.nullified_note_values = self.nullified_note_values.push(note.value);
         self.nullified_note_owner_xs = self.nullified_note_owner_xs.push(note.owner.x);
         self.nullified_note_owner_ys = self.nullified_note_owner_ys.push(note.owner.y);
