@@ -65,3 +65,9 @@ impl Note {
         dep::std::hash::pedersen([crate::Nullifier, note_hash, secret_key])[0]
     }
 }
+
+impl Point {
+    fn new(x: Field, y: Field) -> Self {
+        Point { x, y }
+    } 
+}

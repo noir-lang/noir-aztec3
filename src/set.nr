@@ -1,4 +1,5 @@
-use crate::context::Context;
+use crate::abi::Inputs;
+use crate::abi::IntermediateOutputs;
 use crate::note::Note;
 use crate::note::Point;
 
@@ -18,9 +19,9 @@ impl Set {
     fn new(storage_slot: Field) -> Set {
         Set { storage_slot }
     }
-    
-    fn insert(self, mut ctx: Context, note: Note) -> Context {
-        let contract_address = ctx.public_inputs.call_context.storage_contract_address;
+
+    fn insert(self, inputs: Inputs, mut outputs: IntermediateOutputs, note: Note) -> IntermediateOutputs {
+        let contract_address = inputs.call_context.storage_contract_address;
         let storage_slot = self.storage_slot;
 
         let note_hash = note.compute_note_hash();
@@ -31,15 +32,13 @@ impl Set {
             contract_address,
         ])[0];
 
-        ctx = ctx.push_new_note_hash(siloed_note_hash);
-        ctx = ctx.push_new_note(note);
-        ctx
+        outputs = outputs.push_new_note_hash(siloed_note_hash);
+        outputs.push_new_note(note)
     }
-    
-    
+
     // The `2` in the name is the number of notes returned
-    fn get_2(self, mut ctx: Context) -> (Context, [Note; 2]) {
-        let contract_address: Field = ctx.public_inputs.call_context.storage_contract_address;
+    fn get_2(self, inputs: Inputs, mut outputs: IntermediateOutputs) -> (IntermediateOutputs, [Note; 2]) {
+        let contract_address = inputs.call_context.storage_contract_address;
         let storage_slot = self.storage_slot;
 
         // let note_getter_data: [NoteGetterData; 2] = ORACLE::get_2_notes(contract_address, storage_slot);
@@ -72,20 +71,20 @@ impl Set {
             constrain root == check_root;
 
             // Set the public input of the 'old private data tree root' to be the computed root (if it hasn't already been set); otherwise constrain equality with the previously-set value.
-            if ctx.public_inputs.old_private_data_tree_root == 0 {
-                ctx.public_inputs.old_private_data_tree_root = root;
+            if outputs.old_private_data_tree_root == 0 {
+                outputs.old_private_data_tree_root = root;
             } else {
-                constrain ctx.public_inputs.old_private_data_tree_root == root;
+                constrain outputs.old_private_data_tree_root == root;
             }
         }
 
         let notes = note_getter_data.map(|data: NoteGetterData| data.note);
-        (ctx, notes)
+        (outputs, notes)
     }
 
 
-    fn remove(self, mut ctx: Context, note: Note) -> Context {
-        let contract_address: Field = ctx.public_inputs.call_context.storage_contract_address;
+    fn remove(self, inputs: Inputs, mut outputs: IntermediateOutputs, note: Note) -> IntermediateOutputs {
+        let contract_address = inputs.call_context.storage_contract_address;
         let storage_slot = self.storage_slot;
 
         let note_hash = note.compute_note_hash();
@@ -98,7 +97,7 @@ impl Set {
 
         let nullifier = note.compute_nullifier(siloed_note_hash);
 
-        ctx = ctx.push_new_nullifier(nullifier);
-        ctx.push_nullified_note(note)
+        outputs = outputs.push_new_nullifier(nullifier);
+        outputs.push_nullified_note(note)
     }
 }
