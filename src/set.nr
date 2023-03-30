@@ -7,7 +7,12 @@ use crate::note::Point;
 struct NoteGetterData {
     note: Note,
     leaf_index: Field,
-    sibling_path: [Field; crate::TREE_HEIGHT],
+    // sibling_path: [Field; 5],
+    sibling_path0: Field,
+    sibling_path1: Field,
+    sibling_path2: Field,
+    sibling_path3: Field,
+    sibling_path4: Field,
     root: Field,
 }
 
@@ -42,16 +47,18 @@ impl Set {
         let storage_slot = self.storage_slot;
 
         // let note_getter_data: [NoteGetterData; 2] = ORACLE::get_2_notes(contract_address, storage_slot);
-        let note_getter_data = [
-            NoteGetterData { note: Note::dummy(), leaf_index: 0, sibling_path: [1, 2, 3, 4, 5], root: 1 },
-            NoteGetterData { note: Note::dummy(), leaf_index: 1, sibling_path: [1, 2, 3, 4, 5], root: 1 },
-        ];
 
-        for data in note_getter_data {
-            let NoteGetterData { note, leaf_index, sibling_path, root } = data;
-            let _ignored = sibling_path;
+        // This cannot be an array since NoteGetterData uses arrays internally and Noir does not support
+        // nested arrays
+        let note_getter_data = (
+            // NoteGetterData { note: Note::dummy(), leaf_index: 0, root: 1, sibling_path: [1, 2, 3, 4, 5] },
+            // NoteGetterData { note: Note::dummy(), leaf_index: 1, root: 1, sibling_path: [1, 2, 3, 4, 5] },
+            NoteGetterData { note: Note::dummy(), leaf_index: 0, root: 1, sibling_path0: 1, sibling_path1: 2, sibling_path2: 3, sibling_path3: 4, sibling_path4: 5 },
+            NoteGetterData { note: Note::dummy(), leaf_index: 1, root: 1, sibling_path0: 1, sibling_path1: 2, sibling_path2: 3, sibling_path3: 4, sibling_path4: 5 },
+        );
 
-            let note_hash = note.compute_note_hash();
+        let process_data = |data: NoteGetterData| {
+            let note_hash = data.note.compute_note_hash();
             let siloed_note_hash = dep::std::hash::pedersen([
                 crate::NoteStorageSlot,
                 note_hash, 
@@ -66,20 +73,22 @@ impl Set {
             //     leaf_index,
             //     sibling_path,
             // );
-            let check_root = siloed_note_hash + leaf_index;
+            let check_root = siloed_note_hash + data.leaf_index;
 
-            constrain root == check_root;
+            constrain data.root == check_root;
 
             // Set the public input of the 'old private data tree root' to be the computed root (if it hasn't already been set); otherwise constrain equality with the previously-set value.
             if outputs.old_private_data_tree_root == 0 {
-                outputs.old_private_data_tree_root = root;
+                outputs.old_private_data_tree_root = data.root;
             } else {
-                constrain outputs.old_private_data_tree_root == root;
+                constrain outputs.old_private_data_tree_root == data.root;
             }
-        }
+        };
 
-        let notes = note_getter_data.map(|data: NoteGetterData| data.note);
-        (outputs, notes)
+        process_data(note_getter_data.0);
+        process_data(note_getter_data.1);
+
+        (outputs, [note_getter_data.0.note, note_getter_data.1.note])
     }
 
 
