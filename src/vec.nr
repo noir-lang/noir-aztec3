@@ -30,3 +30,17 @@ impl<T, MaxLen> BoundedVec<T, MaxLen> {
         (self, elem)
     }
 }
+
+// #[test]
+// fn test_vec() {
+//     let vec: BoundedVec<Field, 2> = BoundedVec::new(0);
+//     constrain vec.len == 0;
+//     let vec1 = vec.push(1);
+//     constrain vec1.len == 1;
+//     let vec2 = vec1.push(1);
+//     constrain vec2.len == 2;
+//     let vec3 = vec2.push(1);
+//     constrain vec3.len == 3;
+//     let x = vec3.pop();
+//     constrain x == 1;
+// }

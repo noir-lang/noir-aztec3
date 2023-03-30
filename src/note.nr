@@ -1,5 +1,8 @@
 // global KEY_GENERATOR = Point { x: 1234, y: 5678 }; // would need to be some valid generator point.
 
+#[builtin(rand)]
+fn rand() -> Field {}
+
 struct Note {
     value: Field,
     owner: Point,
@@ -28,7 +31,8 @@ impl Note {
         // let randomness = ORACLE::rand(); // ORACLE CALL
         // let nonce = ORACLE::rand(); // ORACLE CALL (nonce not secure: would need to be better in production).
 
-        let randomness = 4; // Chosen by fair dice roll
+        let randomness = rand();//4; // Chosen by fair dice roll
+        // let randomness = 4; // Chosen by fair dice roll
         let nonce = 3;      // Guaranteed to be random
 
         Note {

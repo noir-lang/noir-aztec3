@@ -33,7 +33,7 @@ impl Set {
         ])[0];
 
         outputs = outputs.push_new_note_hash(siloed_note_hash);
-        outputs.push_new_note(note)
+        outputs.push_new_note(storage_slot, note)
     }
 
     // The `2` in the name is the number of notes returned
