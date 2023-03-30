@@ -52,19 +52,8 @@ struct Outputs {
 
     old_private_data_tree_root: Field,
 
-    new_note_values: [Field; 5],
-    new_note_owner_xs: [Field; 5],
-    new_note_owner_ys: [Field; 5],
-    new_note_randomness: [Field; 5],
-    new_note_nonce: [Field; 5],
-    new_note_is_dummies: [bool; 5],
-
-    nullified_note_values: [Field; 5],
-    nullified_note_owner_xs: [Field; 5],
-    nullified_note_owner_ys: [Field; 5],
-    nullified_note_randomness: [Field; 5],
-    nullified_note_nonce: [Field; 5],
-    nullified_note_is_dummies: [bool; 5],
+    new_notes: [Note; 5],
+    nullified_notes: [Note; 5],
 }
 
 // Equivalent to Outputs, but uses BoundedVecs instead of arrays to
@@ -83,19 +72,8 @@ struct IntermediateOutputs {
 
     old_private_data_tree_root : Field,
 
-    new_note_values: BoundedVec<Field, MAX_NEW_COMMITMENTS>,
-    new_note_owner_xs: BoundedVec<Field, MAX_NEW_COMMITMENTS>,
-    new_note_owner_ys: BoundedVec<Field, MAX_NEW_COMMITMENTS>,
-    new_note_randomness: BoundedVec<Field, MAX_NEW_COMMITMENTS>,
-    new_note_nonce: BoundedVec<Field, MAX_NEW_COMMITMENTS>,
-    new_note_is_dummies: BoundedVec<bool, MAX_NEW_COMMITMENTS>,
-
-    nullified_note_values: BoundedVec<Field, MAX_NEW_NULLIFIERS>,
-    nullified_note_owner_xs: BoundedVec<Field, MAX_NEW_NULLIFIERS>,
-    nullified_note_owner_ys: BoundedVec<Field, MAX_NEW_NULLIFIERS>,
-    nullified_note_randomness: BoundedVec<Field, MAX_NEW_NULLIFIERS>,
-    nullified_note_nonce: BoundedVec<Field, MAX_NEW_NULLIFIERS>,
-    nullified_note_is_dummies: BoundedVec<bool, MAX_NEW_NULLIFIERS>,
+    new_notes: BoundedVec<Note, MAX_NEW_COMMITMENTS>,
+    nullified_notes: BoundedVec<Note, MAX_NEW_NULLIFIERS>,
 }
 
 impl Outputs {
@@ -109,31 +87,20 @@ impl Outputs {
 impl IntermediateOutputs {
     fn new() -> IntermediateOutputs {
         IntermediateOutputs {
-            return_values: BoundedVec::new(0),
-            logs: BoundedVec::new(0),
+            return_values: BoundedVec::new(),
+            logs: BoundedVec::new(),
 
-            new_commitments: BoundedVec::new(0),
-            new_nullifiers: BoundedVec::new(0),
+            new_commitments: BoundedVec::new(),
+            new_nullifiers: BoundedVec::new(),
 
-            private_call_stack: BoundedVec::new(0),
-            public_call_stack: BoundedVec::new(0),
-            l1_message_stack: BoundedVec::new(0),
+            private_call_stack: BoundedVec::new(),
+            public_call_stack: BoundedVec::new(),
+            l1_message_stack: BoundedVec::new(),
 
             old_private_data_tree_root: 0,
 
-            new_note_values: BoundedVec::new(0),
-            new_note_owner_xs: BoundedVec::new(0),
-            new_note_owner_ys: BoundedVec::new(0),
-            new_note_randomness: BoundedVec::new(0),
-            new_note_nonce: BoundedVec::new(0),
-            new_note_is_dummies: BoundedVec::new(true),
-
-            nullified_note_values: BoundedVec::new(0),
-            nullified_note_owner_xs: BoundedVec::new(0),
-            nullified_note_owner_ys: BoundedVec::new(0),
-            nullified_note_randomness: BoundedVec::new(0),
-            nullified_note_nonce: BoundedVec::new(0),
-            nullified_note_is_dummies: BoundedVec::new(true),
+            new_notes: BoundedVec::new(),
+            nullified_notes: BoundedVec::new(),
         }
     }
 
@@ -152,19 +119,8 @@ impl IntermediateOutputs {
 
             old_private_data_tree_root: self.old_private_data_tree_root,
 
-            new_note_values: self.new_note_values.storage,
-            new_note_owner_xs: self.new_note_owner_xs.storage,
-            new_note_owner_ys: self.new_note_owner_ys.storage,
-            new_note_randomness: self.new_note_randomness.storage,
-            new_note_nonce: self.new_note_nonce.storage,
-            new_note_is_dummies: self.new_note_is_dummies.storage,
-
-            nullified_note_values: self.nullified_note_values.storage,
-            nullified_note_owner_xs: self.nullified_note_owner_xs.storage,
-            nullified_note_owner_ys: self.nullified_note_owner_ys.storage,
-            nullified_note_randomness: self.nullified_note_randomness.storage,
-            nullified_note_nonce: self.nullified_note_nonce.storage,
-            nullified_note_is_dummies: self.nullified_note_is_dummies.storage,
+            new_notes: self.new_notes.storage,
+            nullified_notes: self.nullified_notes.storage,
         }
     }
 
@@ -179,22 +135,12 @@ impl IntermediateOutputs {
     }
 
     fn push_new_note(mut self: Self, note: Note) -> Self {
-        self.new_note_values = self.new_note_values.push(note.value);
-        self.new_note_owner_xs = self.new_note_owner_xs.push(note.owner.x);
-        self.new_note_owner_ys = self.new_note_owner_ys.push(note.owner.y);
-        self.new_note_randomness = self.new_note_randomness.push(note.randomness);
-        self.new_note_nonce = self.new_note_nonce.push(note.nonce);
-        self.new_note_is_dummies = self.new_note_is_dummies.push(note.is_dummy);
+        self.new_notes = self.new_notes.push(note);
         self
     }
 
     fn push_nullified_note(mut self: Self, note: Note) -> Self {
-        self.nullified_note_values = self.nullified_note_values.push(note.value);
-        self.nullified_note_owner_xs = self.nullified_note_owner_xs.push(note.owner.x);
-        self.nullified_note_owner_ys = self.nullified_note_owner_ys.push(note.owner.y);
-        self.nullified_note_randomness = self.nullified_note_randomness.push(note.randomness);
-        self.nullified_note_nonce = self.nullified_note_nonce.push(note.nonce);
-        self.nullified_note_is_dummies = self.nullified_note_is_dummies.push(note.is_dummy);
+        self.nullified_notes = self.nullified_notes.push(note);
         self
     }
 }

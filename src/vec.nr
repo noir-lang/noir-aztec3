@@ -1,3 +1,4 @@
+use dep::std::unsafe;
 
 struct BoundedVec<T, MaxLen> {
     storage: [T; MaxLen],
@@ -5,8 +6,8 @@ struct BoundedVec<T, MaxLen> {
 }
 
 impl<T, MaxLen> BoundedVec<T, MaxLen> {
-    fn new(initial_value: T) -> Self {
-        BoundedVec { storage: [initial_value; MaxLen], len: 0 }
+    fn new() -> Self {
+        BoundedVec { storage: [unsafe::zeroed(); MaxLen], len: 0 }
     }
 
     fn get(mut self: Self, index: comptime Field) -> T {
