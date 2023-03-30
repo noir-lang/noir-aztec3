@@ -17,6 +17,9 @@ global TREE_HEIGHT: comptime Field = 5;
 #[builtin(rand)]
 fn rand() -> Field {}
 
+#[builtin(notify_created_note)]
+fn notify_created_note() -> Field {}
+
 #[builtin(get_2_notes)]
 fn get_2_notes_inner() -> [Field; 2] {} // 26 fields
 
@@ -35,7 +38,6 @@ fn make_note_getter_data(fields: [Field], start: comptime Field) -> set::NoteGet
             is_dummy: fields[start + 5] as bool,
         },
         leaf_index: fields[start + 6],
-        // sibling_path: [Field; 5],
         sibling_path0: fields[start + 7],
         sibling_path1: fields[start + 8],
         sibling_path2: fields[start + 9],

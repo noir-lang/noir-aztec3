@@ -46,16 +46,16 @@ impl Set {
         let contract_address = inputs.call_context.storage_contract_address;
         let storage_slot = self.storage_slot;
 
-        // let note_getter_data: [NoteGetterData; 2] = ORACLE::get_2_notes(contract_address, storage_slot);
+        let note_getter_data = crate::get_2_notes(); //(contract_address, storage_slot);
 
         // This cannot be an array since NoteGetterData uses arrays internally and Noir does not support
         // nested arrays
-        let note_getter_data = (
-            // NoteGetterData { note: Note::dummy(), leaf_index: 0, root: 1, sibling_path: [1, 2, 3, 4, 5] },
-            // NoteGetterData { note: Note::dummy(), leaf_index: 1, root: 1, sibling_path: [1, 2, 3, 4, 5] },
-            NoteGetterData { note: Note::dummy(), leaf_index: 0, root: 1, sibling_path0: 1, sibling_path1: 2, sibling_path2: 3, sibling_path3: 4, sibling_path4: 5 },
-            NoteGetterData { note: Note::dummy(), leaf_index: 1, root: 1, sibling_path0: 1, sibling_path1: 2, sibling_path2: 3, sibling_path3: 4, sibling_path4: 5 },
-        );
+        // let note_getter_data = (
+        //     // NoteGetterData { note: Note::dummy(), leaf_index: 0, root: 1, sibling_path: [1, 2, 3, 4, 5] },
+        //     // NoteGetterData { note: Note::dummy(), leaf_index: 1, root: 1, sibling_path: [1, 2, 3, 4, 5] },
+        //     NoteGetterData { note: Note::dummy(), leaf_index: 0, root: 1, sibling_path0: 1, sibling_path1: 2, sibling_path2: 3, sibling_path3: 4, sibling_path4: 5 },
+        //     NoteGetterData { note: Note::dummy(), leaf_index: 1, root: 1, sibling_path0: 1, sibling_path1: 2, sibling_path2: 3, sibling_path3: 4, sibling_path4: 5 },
+        // );
 
         let process_data = |data: NoteGetterData| {
             let note_hash = data.note.compute_note_hash();
