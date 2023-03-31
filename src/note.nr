@@ -3,6 +3,9 @@
 #[builtin(rand)]
 fn rand() -> Field {}
 
+#[builtin(getSecretKey)]
+fn get_secret_key(_owner: Point) -> Field {}
+
 struct Note {
     value: Field,
     owner: Point,
@@ -58,7 +61,7 @@ impl Note {
 
     fn compute_nullifier(self, note_hash: Field) -> Field {
         // let secret_key = ORACLE::get_secret_key(self.owner); // ORACLE CALL - retrieves the secret key for a given public key.
-        let secret_key = 12; // Temporary
+        let secret_key = get_secret_key(self.owner);
 
         // let key_generator = Point { x: 1234, y: 5678 };
         // let check_public_key = scalar_mul(secret_key, key_generator); // (function not show in this doc: just assumed to exist in noir's stdlib)

@@ -12,7 +12,11 @@ fn notify_created_note(
     _storage_slot: Field,
     _note: Note,
 ) -> Field {}
-// Should also add new commitment
+
+#[builtin(notifyNullifiedNote)]
+fn notify_nullified_note(
+    _nullifier: Field,
+) -> Field {}
 
 use crate::note::Note;
 use crate::vec::BoundedVec;
@@ -305,6 +309,8 @@ impl IntermediateOutputs {
     }
 
     fn push_new_nullifier(mut self: Self, nullifier: Field) -> Self {
+        constrain notify_nullified_note(nullifier) == 0;
+
         self.new_nullifiers = self.new_nullifiers.push(nullifier);
         self
     }
