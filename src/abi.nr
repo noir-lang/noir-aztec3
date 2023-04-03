@@ -7,17 +7,6 @@ global MAX_PRIVATE_CALL_STACK : comptime Field = 4;
 global MAX_PUBLIC_CALL_STACK: comptime Field = 4;
 global MAX_L1_MSG_STACK : comptime Field = 2;
 
-#[builtin(notifyCreatedNote)]
-fn notify_created_note(
-    _storage_slot: Field,
-    _note: Note,
-) -> Field {}
-
-#[builtin(notifyNullifiedNote)]
-fn notify_nullified_note(
-    _nullifier: Field,
-) -> Field {}
-
 use crate::note::Note;
 use crate::vec::BoundedVec;
 
@@ -309,15 +298,11 @@ impl IntermediateOutputs {
     }
 
     fn push_new_nullifier(mut self: Self, nullifier: Field) -> Self {
-        constrain notify_nullified_note(nullifier) == 0;
-
         self.new_nullifiers = self.new_nullifiers.push(nullifier);
         self
     }
 
-    fn push_new_note(mut self: Self, storage_slot: Field, note: Note) -> Self {
-        constrain notify_created_note(storage_slot, note) == 0;
-
+    fn push_new_note(mut self: Self, note: Note) -> Self {
         self.new_note_values = self.new_note_values.push(note.value);
         self.new_note_owner_xs = self.new_note_owner_xs.push(note.owner.x);
         self.new_note_owner_ys = self.new_note_owner_ys.push(note.owner.y);

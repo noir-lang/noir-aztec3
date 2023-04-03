@@ -1,7 +1,22 @@
+use dep::std;
 use crate::abi::Inputs;
 use crate::abi::IntermediateOutputs;
 use crate::note::Note;
 use crate::note::Point;
+
+#[builtin(notifyCreatedNote)]
+fn notify_created_note(
+    _storage_slot: Field,
+    _owner: Point,
+    _note: Note,
+) -> Field {}
+
+#[builtin(notifyNullifiedNote)]
+fn notify_nullified_note(
+    _storage_slot: Field,
+    _nullifier: Field,
+    _note: Note,
+) -> Field {}
 
 #[builtin(getNotes2)]
 fn get_notes_2_internal(
@@ -66,8 +81,9 @@ impl Set {
             contract_address,
         ])[0];
 
+        constrain notify_created_note(storage_slot, note.owner, note) == 0;
         outputs = outputs.push_new_note_hash(siloed_note_hash);
-        outputs.push_new_note(storage_slot, note)
+        outputs.push_new_note(note)
     }
 
     // The `2` in the name is the number of notes returned
@@ -94,15 +110,12 @@ impl Set {
                 contract_address           ])[0];
 
             // Check existence in tree:
-            // (Not sure what methods noir has, we can probably use whatever those are)
-            // let check_root = compute_merkle_root(
-            //     siloed_note_hash,
-            //     leaf_index,
-            //     sibling_path,
-            // );
-            let check_root = siloed_note_hash + leaf_index;
-
-            constrain root == check_root;
+            constrain std::merkle::check_membership(
+                root,
+                siloed_note_hash,
+                leaf_index,
+                sibling_path,
+            ) == 1;
 
             // Set the public input of the 'old private data tree root' to be the computed root (if it hasn't already been set); otherwise constrain equality with the previously-set value.
             if outputs.old_private_data_tree_root == 0 {
@@ -132,7 +145,7 @@ impl Set {
         ])[0];
 
         let nullifier = note.compute_nullifier(siloed_note_hash);
-
+        constrain notify_nullified_note(storage_slot, nullifier, note) == 0;
         outputs = outputs.push_new_nullifier(nullifier);
         outputs.push_nullified_note(note)
     }
